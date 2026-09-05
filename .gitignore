@@ -1,0 +1,13 @@
+backend/venv/
+backend/__pycache__/
+backend/*__pycache__*
+backend/last_uploaded_aadhaar.jpg
+backend/dist/
+frontend/node_modules/
+frontend/dist/
+.env
+*.pyc
+*.pyo
+*.db
+*.sqlite3
+*.pdf
