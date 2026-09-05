@@ -11,7 +11,7 @@ Features:
 - Initializes the database and seeds train routes/coaches if empty.
 - Serves both the complete React frontend SPA and FastAPI REST backend.
 - Automatically opens the web application in your default web browser!
-- 100% compatible with Hugging Face Spaces (runs python app.py on port 7860).
+- 100% compatible with Hugging Face Spaces (Gradio and Docker SDKs).
 =============================================================================
 """
 
@@ -58,6 +58,30 @@ if BACKEND_DIR not in sys.path:
 os.chdir(BACKEND_DIR)
 
 from main import app  # FastAPI unified app
+
+# Optional Gradio wrapper for Hugging Face Spaces Gradio SDK
+try:
+    import gradio as gr
+    with gr.Blocks(title="Train Seat AI", fill_width=True) as demo:
+        gr.HTML("""
+        <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 30px; border-radius: 16px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center;">
+            <div style="font-size: 54px; margin-bottom: 12px;">🚆</div>
+            <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 12px; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Train Seat AI</h1>
+            <p style="font-size: 16px; color: #94a3b8; margin-bottom: 24px;">Autonomous Priority Train Seat Allocation System & Live ERS Ticket Generator</p>
+            <a href="/login" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%); color: white; padding: 14px 28px; border-radius: 10px; font-weight: 700; font-size: 16px; text-decoration: none; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4);">Launch Web Application →</a>
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 13px; color: #64748b;">
+                <p>Status: <span style="color: #4ade80; font-weight: 600;">● Server Active</span> | API Docs: <a href="/docs" target="_blank" style="color: #38bdf8;">/docs</a></p>
+            </div>
+        </div>
+        <script>
+            if (window.self === window.top) {
+                window.location.href = '/login';
+            }
+        </script>
+        """)
+    app = gr.mount_gradio_app(app, demo, path="/gradio")
+except Exception:
+    demo = None
 
 def get_free_port(default: int = 7860) -> int:
     """Check if the default port is free; if not, find the next available port."""
