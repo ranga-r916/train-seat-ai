@@ -171,31 +171,78 @@ export default function BookSeat() {
     '12008', '12658', '12692'
   ];
 
-  const getRouteForTrain = (trainNumber) => {
+  const CORRIDOR_BENGALURU_TUMKUR = ['KSR Bengaluru', 'Yesvantpur', 'Chikbanavar', 'Nelamangala', 'Kunigal', 'Tumkur'];
+  const CORRIDOR_BENGALURU_MYSURU = ['KSR Bengaluru', 'Kengeri', 'Bidadi', 'Ramanagara', 'Channapatna', 'Maddur', 'Mandya', 'Srirangapatna', 'Mysuru Junction'];
+  const CORRIDOR_BENGALURU_CHENNAI = ['KSR Bengaluru', 'Krishnarajapuram', 'Bangarapet', 'Jolarpettai', 'Katpadi', 'Arakkonam', 'Chennai Central'];
+  const CORRIDOR_DELHI_MUMBAI = ['New Delhi', 'Kota Junction', 'Ratlam Junction', 'Vadodara Junction', 'Surat', 'Mumbai Central'];
+  const CORRIDOR_DELHI_HOWRAH = ['New Delhi', 'Kanpur Central', 'Prayagraj Junction', 'Patna Junction', 'Howrah Junction'];
+  const CORRIDOR_DELHI_BENGALURU = ['New Delhi', 'Bhopal Junction', 'Nagpur Junction', 'Secunderabad Junction', 'KSR Bengaluru'];
+  const CORRIDOR_MUMBAI_CHENNAI = ['Mumbai Central', 'Pune Junction', 'Solapur', 'Chennai Central'];
+  const CORRIDOR_HOWRAH_CHENNAI = ['Howrah Junction', 'Bhubaneswar', 'Visakhapatnam', 'Vijayawada', 'Chennai Central'];
+
+  const getRouteForTrain = (trainOrNumber) => {
+    let trainNumber = '';
+    let src = '';
+    let dest = '';
+
+    if (typeof trainOrNumber === 'object' && trainOrNumber !== null) {
+      trainNumber = String(trainOrNumber.train_number || '').replace(/^[A-Za-z]+-/, '').trim();
+      src = (trainOrNumber.source_station || '').toLowerCase();
+      dest = (trainOrNumber.destination_station || '').toLowerCase();
+    } else {
+      trainNumber = String(trainOrNumber || '').replace(/^[A-Za-z]+-/, '').trim();
+    }
+
+    // 1. Direct Corridor Direction matching based on train source & destination
+    if (src && dest) {
+      if (src.includes('bengaluru') && dest.includes('tumkur')) return [...CORRIDOR_BENGALURU_TUMKUR];
+      if (src.includes('tumkur') && dest.includes('bengaluru')) return [...CORRIDOR_BENGALURU_TUMKUR].reverse();
+
+      if (src.includes('bengaluru') && dest.includes('mysuru')) return [...CORRIDOR_BENGALURU_MYSURU];
+      if (src.includes('mysuru') && dest.includes('bengaluru')) return [...CORRIDOR_BENGALURU_MYSURU].reverse();
+
+      if (src.includes('bengaluru') && dest.includes('chennai')) return [...CORRIDOR_BENGALURU_CHENNAI];
+      if (src.includes('chennai') && dest.includes('bengaluru')) return [...CORRIDOR_BENGALURU_CHENNAI].reverse();
+
+      if (src.includes('chennai') && dest.includes('mysuru')) {
+        return ['Chennai Central', 'Arakkonam', 'Katpadi', 'Jolarpettai', 'Bangarapet', 'KSR Bengaluru', 'Mandya', 'Mysuru Junction'];
+      }
+      if (src.includes('mysuru') && dest.includes('chennai')) {
+        return ['Mysuru Junction', 'Mandya', 'KSR Bengaluru', 'Bangarapet', 'Jolarpettai', 'Katpadi', 'Arakkonam', 'Chennai Central'];
+      }
+
+      if (src.includes('delhi') && dest.includes('mumbai')) return [...CORRIDOR_DELHI_MUMBAI];
+      if (src.includes('mumbai') && dest.includes('delhi')) return [...CORRIDOR_DELHI_MUMBAI].reverse();
+
+      if (src.includes('delhi') && dest.includes('howrah')) return [...CORRIDOR_DELHI_HOWRAH];
+      if (src.includes('howrah') && dest.includes('delhi')) return [...CORRIDOR_DELHI_HOWRAH].reverse();
+
+      if (src.includes('delhi') && dest.includes('bengaluru')) return [...CORRIDOR_DELHI_BENGALURU];
+      if (src.includes('bengaluru') && dest.includes('delhi')) return [...CORRIDOR_DELHI_BENGALURU].reverse();
+
+      if (src.includes('mumbai') && dest.includes('chennai')) return [...CORRIDOR_MUMBAI_CHENNAI];
+      if (src.includes('chennai') && dest.includes('mumbai')) return [...CORRIDOR_MUMBAI_CHENNAI].reverse();
+
+      if (src.includes('howrah') && dest.includes('chennai')) return [...CORRIDOR_HOWRAH_CHENNAI];
+      if (src.includes('chennai') && dest.includes('howrah')) return [...CORRIDOR_HOWRAH_CHENNAI].reverse();
+    }
+
+    // 2. Train Number List Fallbacks
     if (TUMKUR_TRAINS.includes(trainNumber)) {
-      return ['KSR Bengaluru', 'Yesvantpur', 'Chikbanavar', 'Nelamangala', 'Kunigal', 'Tumkur'];
+      return [...CORRIDOR_BENGALURU_TUMKUR];
     }
     if (MYSURU_TRAINS.includes(trainNumber)) {
-      return ['KSR Bengaluru', 'Kengeri', 'Bidadi', 'Ramanagara', 'Channapatna', 'Maddur', 'Mandya', 'Srirangapatna', 'Mysuru Junction'];
+      return [...CORRIDOR_BENGALURU_MYSURU];
     }
-    if (CHENNAI_TRAINS.includes(trainNumber)) {
-      return ['KSR Bengaluru', 'Krishnarajapuram', 'Bangarapet', 'Jolarpettai', 'Katpadi', 'Arakkonam', 'Chennai Central'];
+    if (CHENNAI_TRAINS.includes(trainNumber) || trainNumber === '12657' || trainNumber === '12608' || trainNumber === '12639') {
+      return [...CORRIDOR_BENGALURU_CHENNAI];
     }
-    if (trainNumber === '12952') {
-      return ['New Delhi', 'Kota Junction', 'Ratlam Junction', 'Vadodara Junction', 'Surat', 'Mumbai Central'];
-    }
-    if (trainNumber === '12302') {
-      return ['New Delhi', 'Kanpur Central', 'Prayagraj Junction', 'Patna Junction', 'Howrah Junction'];
-    }
-    if (['12628', '22691'].includes(trainNumber)) {
-      return ['New Delhi', 'Bhopal Junction', 'Nagpur Junction', 'Secunderabad Junction', 'KSR Bengaluru'];
-    }
-    if (trainNumber === '12163') {
-      return ['Mumbai Central', 'Pune Junction', 'Solapur', 'Chennai Central'];
-    }
-    if (trainNumber === '12842') {
-      return ['Howrah Junction', 'Bhubaneswar', 'Visakhapatnam', 'Vijayawada', 'Chennai Central'];
-    }
+    if (trainNumber === '12952') return [...CORRIDOR_DELHI_MUMBAI];
+    if (trainNumber === '12302') return [...CORRIDOR_DELHI_HOWRAH];
+    if (['12628', '22691'].includes(trainNumber)) return [...CORRIDOR_DELHI_BENGALURU];
+    if (trainNumber === '12163') return [...CORRIDOR_MUMBAI_CHENNAI];
+    if (trainNumber === '12842') return [...CORRIDOR_HOWRAH_CHENNAI];
+
     return [];
   };
 
@@ -218,18 +265,30 @@ export default function BookSeat() {
     return `${hours}h ${mins}m`;
   };
 
-  const ALL_TRAIN_NUMBERS = [
-    ...TUMKUR_TRAINS,
-    ...MYSURU_TRAINS,
-    ...CHENNAI_TRAINS,
-    '12628', '22691', '12952', '12302', '12163', '12842'
+  const allCorridors = [
+    CORRIDOR_BENGALURU_TUMKUR,
+    [...CORRIDOR_BENGALURU_TUMKUR].reverse(),
+    CORRIDOR_BENGALURU_MYSURU,
+    [...CORRIDOR_BENGALURU_MYSURU].reverse(),
+    CORRIDOR_BENGALURU_CHENNAI,
+    [...CORRIDOR_BENGALURU_CHENNAI].reverse(),
+    ['Chennai Central', 'Arakkonam', 'Katpadi', 'Jolarpettai', 'Bangarapet', 'KSR Bengaluru', 'Mandya', 'Mysuru Junction'],
+    ['Mysuru Junction', 'Mandya', 'KSR Bengaluru', 'Bangarapet', 'Jolarpettai', 'Katpadi', 'Arakkonam', 'Chennai Central'],
+    CORRIDOR_DELHI_MUMBAI,
+    [...CORRIDOR_DELHI_MUMBAI].reverse(),
+    CORRIDOR_DELHI_HOWRAH,
+    [...CORRIDOR_DELHI_HOWRAH].reverse(),
+    CORRIDOR_DELHI_BENGALURU,
+    [...CORRIDOR_DELHI_BENGALURU].reverse(),
+    CORRIDOR_MUMBAI_CHENNAI,
+    [...CORRIDOR_MUMBAI_CHENNAI].reverse(),
+    CORRIDOR_HOWRAH_CHENNAI,
+    [...CORRIDOR_HOWRAH_CHENNAI].reverse(),
   ];
-
-  const allRoutes = ALL_TRAIN_NUMBERS.map(num => getRouteForTrain(num));
 
   const getValidSources = () => {
     const sources = new Set();
-    allRoutes.forEach(route => {
+    allCorridors.forEach(route => {
       for (let i = 0; i < route.length - 1; i++) {
         sources.add(route[i]);
       }
@@ -240,7 +299,7 @@ export default function BookSeat() {
   const getValidDestinations = (selectedSource) => {
     if (!selectedSource) return [];
     const destinations = new Set();
-    allRoutes.forEach(route => {
+    allCorridors.forEach(route => {
       const srcIdx = route.findIndex(st => st.toLowerCase() === selectedSource.toLowerCase());
       if (srcIdx !== -1) {
         for (let i = srcIdx + 1; i < route.length; i++) {
@@ -342,7 +401,7 @@ export default function BookSeat() {
       const fetchPromises = [];
       
       for (const t of allTrains) {
-        const route = getRouteForTrain(t.train_number);
+        const route = getRouteForTrain(t);
         const srcIdx = route.findIndex(st => st.toLowerCase() === source.toLowerCase());
         const dstIdx = route.findIndex(st => st.toLowerCase() === destination.toLowerCase());
         
