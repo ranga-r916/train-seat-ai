@@ -41,11 +41,17 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     )
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        user_id: str = payload.get("sub")
-        if user_id is None:
+        user_id_raw = payload.get("sub")
+        if user_id_raw is None:
             raise credentials_exception
+        import uuid
+        try:
+            user_id = uuid.UUID(str(user_id_raw))
+        except (ValueError, TypeError, AttributeError):
+            user_id = user_id_raw
     except JWTError:
         raise credentials_exception
+
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
         raise credentials_exception
