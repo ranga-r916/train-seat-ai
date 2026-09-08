@@ -43,6 +43,7 @@ def create_tables():
     # Auto-seed database if empty (ensures zero-config cloud deployment on Render and Hugging Face)
     try:
         from models.train import Train
+        from models.user import User
         db = SessionLocal()
         train_count = db.query(Train).count()
         if train_count == 0:
@@ -58,6 +59,13 @@ def create_tables():
             except Exception as e:
                 print(f"All-India trains seed warning: {e}")
             print("[+] Auto-seeding complete!")
+        elif db.query(User).count() == 0:
+            try:
+                from seed import seed
+                seed(db)
+                print("[+] Default users seeded successfully!")
+            except Exception as e:
+                print(f"User seed warning: {e}")
         db.close()
     except Exception as e:
         print(f"Startup check warning: {e}")

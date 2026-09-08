@@ -163,10 +163,46 @@ def seed(db=None):
                 )
                 db.add(seat)
 
+    # 3. Seed default user accounts so they work instantly on fresh cloud databases
+    from models.user import User, UserRole, PriorityLevel
+    default_users = [
+        {
+            "name": "Ranganath R",
+            "email": "rangaso3652@gmail.com",
+            "mobile": "9876543210",
+            "hashed_password": "$2b$12$gCpmMHD0FfYg1CVZGbLTQebqDhKUOco.LOybxi.ZLYcD6vH27r9Cq",
+            "role": UserRole.PASSENGER,
+            "priority": PriorityLevel.P4_GENERAL,
+            "aadhaar_verified": True
+        },
+        {
+            "name": "Vinutha K S",
+            "email": "ksvinutha12@gmail.com",
+            "mobile": "9876543211",
+            "hashed_password": "$2b$12$G05pWEp6qu8E562i5qmz0uHC8/MylqjHvxw49is917csB9ezRpIm2",
+            "role": UserRole.PASSENGER,
+            "priority": PriorityLevel.P4_GENERAL,
+            "aadhaar_verified": True
+        },
+        {
+            "name": "Ranganath",
+            "email": "ranganathr8904@gmail.com",
+            "mobile": "9876543212",
+            "hashed_password": "$2b$12$gCpmMHD0FfYg1CVZGbLTQebqDhKUOco.LOybxi.ZLYcD6vH27r9Cq",
+            "role": UserRole.ADMIN,
+            "priority": PriorityLevel.P4_GENERAL,
+            "aadhaar_verified": True
+        }
+    ]
+    for u_info in default_users:
+        if not db.query(User).filter(User.email == u_info["email"]).first():
+            u = User(**u_info)
+            db.add(u)
+
     db.commit()
     if close_when_done:
         db.close()
-    print("Database seeding complete for local routes!")
+    print("Database seeding complete for local routes and users!")
 
 if __name__ == "__main__":
     seed()
