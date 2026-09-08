@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: train-seat-ai
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: PYTHONUNBUFFERED
+        value: '1'
+

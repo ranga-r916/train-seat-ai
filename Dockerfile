@@ -39,10 +39,10 @@ RUN useradd -m -u 1000 appuser && \
     chown -R appuser:appuser /app
 USER appuser
 
-# Hugging Face Spaces port
+# Port compatibility for Render ($PORT=10000) and Hugging Face ($PORT=7860)
 ENV PORT=10000
 ENV PYTHONUNBUFFERED=1
-
 EXPOSE 10000
+EXPOSE 7860
 
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-10000}"]
