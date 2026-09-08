@@ -1,3 +1,4 @@
+import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
@@ -93,8 +94,13 @@ def get_available_seats(
     # Self-heal expired locks before querying
     release_expired_locks(db)
 
+    try:
+        t_uuid = uuid.UUID(str(train_id))
+    except Exception:
+        t_uuid = train_id
+
     query = db.query(Seat).join(Coach).filter(
-        Coach.train_id == train_id,
+        Coach.train_id == t_uuid,
         Seat.status == SeatStatus.AVAILABLE
     )
     if coach:
@@ -121,7 +127,12 @@ def get_seat_map(train_id: str, db: Session = Depends(get_db), current_user: Use
     # Self-heal expired locks before returning map
     release_expired_locks(db)
 
-    coaches = db.query(Coach).filter(Coach.train_id == train_id).order_by(Coach.coach_number).all()
+    try:
+        t_uuid = uuid.UUID(str(train_id))
+    except Exception:
+        t_uuid = train_id
+
+    coaches = db.query(Coach).filter(Coach.train_id == t_uuid).order_by(Coach.coach_number).all()
     result = []
     for c in coaches:
         seats = db.query(Seat).filter(Seat.coach_id == c.id).order_by(Seat.seat_number).all()

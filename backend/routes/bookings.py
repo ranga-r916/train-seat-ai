@@ -398,7 +398,7 @@ def book_family(
     # Fallback: if adjacent seats not found, try to book any random available seats
     if not allocated_seats:
         all_seats = db.query(Seat).join(Coach).filter(
-            Coach.train_id == data.train_id,
+            Coach.train_id == train_uuid,
             Seat.status != SeatStatus.LOCKED
         ).order_by(Seat.seat_number).all()
         

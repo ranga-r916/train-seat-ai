@@ -546,11 +546,14 @@ export default function BookSeat() {
     try {
       const res = await api.get(`/seats/map/${selectedTrain}`);
       const coachData = res.data.find(c => c.coach.toUpperCase() === selectedCoach.toUpperCase());
-      if (coachData) {
+      if (coachData && coachData.seats) {
         setSeatMap(coachData.seats);
+      } else if (res.data && res.data.length > 0) {
+        setSeatMap(res.data[0].seats);
+        setSelectedCoach(res.data[0].coach);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Error loading seat map:', err);
     } finally {
       setLoadingMap(false);
     }
@@ -1225,7 +1228,7 @@ export default function BookSeat() {
                             </div>
                           </div>
 
-                          {/* Where Is My Train Action Button */}
+                          {/* Live Running Status Action Button */}
                           <div className="flex flex-col items-end gap-1.5">
                             <button
                               type="button"
@@ -1234,10 +1237,10 @@ export default function BookSeat() {
                                 setLiveStatusModalTrain(t);
                               }}
                               className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-brand-500/30 text-brand-400 hover:bg-brand-500/10 hover:border-brand-500 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm group"
-                              title="View Where Is My Train live station-by-station running status"
+                              title="View live station-by-station running status and schedule"
                             >
                               <Radio className="w-3.5 h-3.5 animate-pulse text-brand-400" />
-                              <span>Where Is My Train?</span>
+                              <span>Live Running Status</span>
                             </button>
                             <span className="text-[9px] text-slate-500 italic">
                               GPS / Cell Tower Live
@@ -1245,7 +1248,7 @@ export default function BookSeat() {
                           </div>
                         </div>
 
-                        {/* Where Is My Train Mini Status Ticker */}
+                        {/* Live Running Status Mini Ticker */}
                         <div className="px-5 py-2.5 bg-slate-950/60 border-b border-slate-900/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
                           <div className="flex items-center gap-2 text-slate-300">
                             <Navigation className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -1412,6 +1415,18 @@ export default function BookSeat() {
                               <div className="py-20 flex flex-col items-center justify-center text-slate-400">
                                 <Loader2 className="w-8 h-8 animate-spin text-brand-500 mb-2" />
                                 <span>Loading coach grid...</span>
+                              </div>
+                            ) : seatMap.length === 0 ? (
+                              <div className="py-12 flex flex-col items-center justify-center text-slate-400 bg-slate-950/50 rounded-2xl border border-slate-900">
+                                <Armchair className="w-8 h-8 text-slate-600 mb-2" />
+                                <span className="text-xs font-semibold text-slate-400">Loading or no seats found for Coach {selectedCoach}</span>
+                                <button
+                                  type="button"
+                                  onClick={fetchSeatMap}
+                                  className="mt-3 px-3 py-1.5 bg-brand-600/20 text-brand-400 border border-brand-500/30 rounded-lg text-xs hover:bg-brand-600/30 transition-all font-semibold"
+                                >
+                                  Retry Loading Coach
+                                </button>
                               </div>
                             ) : (
                               <div>
@@ -1581,7 +1596,7 @@ export default function BookSeat() {
         </div>
       </main>
 
-      {/* Where Is My Train - Live Running Status Modal */}
+      {/* Live Running Status Modal */}
       {liveStatusModalTrain && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
           <div className="bg-slate-950 border border-slate-800 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
@@ -1602,7 +1617,7 @@ export default function BookSeat() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Where Is My Train • Live GPS Running Status & Coach Position
+                    Live GPS Running Status & Route Schedule
                   </p>
                 </div>
               </div>
@@ -1710,7 +1725,7 @@ export default function BookSeat() {
               {/* Coach Position / Rake Layout Guide */}
               <div className="mt-6 pt-4 border-t border-slate-800">
                 <span className="text-xs font-extrabold text-slate-300 uppercase tracking-wider block mb-2">
-                  Where Is My Coach? (Rake Formation)
+                  Coach Sequence & Platform Guide (Rake Formation)
                 </span>
                 <p className="text-[11px] text-slate-400 mb-3">
                   Check coach order from Engine to Guard Van to position yourself on the platform before arrival:
