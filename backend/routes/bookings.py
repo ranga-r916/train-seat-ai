@@ -184,7 +184,15 @@ def calculate_fare(source: str, destination: str, priority_level: str, coach_cla
 
 def create_razorpay_order(amount: float, booking_id: str) -> str:
     """Create a Razorpay order or fallback to generating a mock ID."""
-    if "rzp_test_" in settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET or settings.RAZORPAY_KEY_SECRET == "your-razorpay-secret":
+    if (
+        "mock" in str(settings.RAZORPAY_KEY_ID).lower()
+        or "rzp_test_" in str(settings.RAZORPAY_KEY_ID)
+        or "sandbox" in str(settings.RAZORPAY_KEY_ID).lower()
+        or "your-razorpay" in str(settings.RAZORPAY_KEY_SECRET).lower()
+        or "your-razorpay" in str(settings.RAZORPAY_KEY_ID).lower()
+        or not settings.RAZORPAY_KEY_SECRET
+        or settings.RAZORPAY_KEY_SECRET == "your-razorpay-secret"
+    ):
         return f"order_mock_{uuid.uuid4().hex[:12]}"
         
     try:

@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = "your-gemini-api-key"
 
     # Razorpay (test mode)
-    RAZORPAY_KEY_ID: str = "your-razorpay-key-id"
-    RAZORPAY_KEY_SECRET: str = "your-razorpay-key-secret"
+    RAZORPAY_KEY_ID: str = "rzp_test_sandbox12345"
+    RAZORPAY_KEY_SECRET: str = "your-razorpay-secret"
 
     # App
     APP_NAME: str = "Train Seat AI"

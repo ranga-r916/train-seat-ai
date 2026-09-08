@@ -782,7 +782,7 @@ export default function BookSeat() {
         razorpay_order_id: razorpayOrderId,
         razorpay_payment_id: `pay_mock_${uuid()}`,
         razorpay_signature: 'signature_mock_verification_passed',
-        method: paymentMethod
+        method: paymentMethod || 'UPI'
       });
 
       if (res.data.status === 'success') {
@@ -790,15 +790,26 @@ export default function BookSeat() {
         setPaymentSuccess(true);
         
         // Fetch confirmed booking structures (including QR codes)
-        const updatedBookings = await api.get('/bookings/my');
-        const confirmedList = updatedBookings.data.filter(b => 
-          res.data.booking_ids.includes(b.id)
-        );
-        setConfirmedBookings(confirmedList);
+        try {
+          const updatedBookings = await api.get('/bookings/my');
+          const confirmedIds = res.data.booking_ids || [leadBooking.id];
+          const confirmedList = (updatedBookings.data || []).filter(b => 
+            confirmedIds.includes(b.id)
+          );
+          if (confirmedList.length > 0) {
+            setConfirmedBookings(confirmedList);
+          } else {
+            setConfirmedBookings(checkoutResponseList);
+          }
+        } catch (fetchErr) {
+          console.error("Failed to load /bookings/my:", fetchErr);
+          setConfirmedBookings(checkoutResponseList);
+        }
       }
     } catch (err) {
       console.error(err);
-      alert('Payment confirmation failed. Try again.');
+      const detail = err.response?.data?.detail || err.message || 'Payment confirmation failed. Try again.';
+      alert(`Payment confirmation failed: ${detail}`);
     } finally {
       setPaymentLoading(false);
     }
