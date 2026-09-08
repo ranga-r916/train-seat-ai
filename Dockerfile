@@ -39,9 +39,10 @@ RUN useradd -m -u 1000 appuser && \
     chown -R appuser:appuser /app
 USER appuser
 
-# Port compatibility for Render ($PORT=10000) and Hugging Face ($PORT=7860)
+# Port and Database compatibility for Render and Hugging Face
 ENV PORT=10000
 ENV PYTHONUNBUFFERED=1
+ENV DATABASE_URL=sqlite:///./train_allocation.db
 EXPOSE 10000
 EXPOSE 7860
 
