@@ -6,17 +6,17 @@ from config import settings
 DATABASE_URL = settings.DATABASE_URL
 
 if DATABASE_URL.startswith("sqlite"):
-    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False, "timeout": 30})
 else:
     try:
-        engine = create_engine(DATABASE_URL)
+        engine = create_engine(DATABASE_URL, connect_args={"connect_timeout": 3})
         # Test connection
         with engine.connect():
             pass
     except Exception as e:
         print(f"⚠️ PostgreSQL connection failed ({e}). Falling back to embedded SQLite database for zero-config operation.")
         DATABASE_URL = "sqlite:///./train_allocation.db"
-        engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+        engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False, "timeout": 30})
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, expire_on_commit=False)
 

@@ -75,6 +75,8 @@ def get_trains(db: Session = Depends(get_db)):
         "train_name": t.train_name,
         "source": t.source_station,
         "dest": t.destination_station,
+        "source_station": t.source_station,
+        "destination_station": t.destination_station,
         "departure_time": t.departure_time.strftime("%H:%M") if t.departure_time else None,
         "arrival_time": t.arrival_time.strftime("%H:%M") if t.arrival_time else None
     } for t in trains]

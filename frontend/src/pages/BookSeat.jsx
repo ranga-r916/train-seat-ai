@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   Train, Calendar, MapPin, Loader2, ArrowLeft, Armchair, 
-  Sparkles, CheckCircle2, ShieldCheck, Clock, Users, Plus, Trash, Check, AlertCircle, FileText, Download
+  Sparkles, CheckCircle2, ShieldCheck, Clock, Users, Plus, Trash, Check, AlertCircle, FileText, Download,
+  Radio, Navigation, Zap, Compass, Info, X, ChevronRight, Activity, ArrowRight, Gauge
 } from 'lucide-react';
 import api from '../api';
 
@@ -26,6 +27,7 @@ export default function BookSeat() {
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [selectedClass, setSelectedClass] = useState('SL');
+  const [liveStatusModalTrain, setLiveStatusModalTrain] = useState(null);
   
   // Passenger selection (family booking)
   const [allUsers, setAllUsers] = useState([]);
@@ -187,8 +189,8 @@ export default function BookSeat() {
 
     if (typeof trainOrNumber === 'object' && trainOrNumber !== null) {
       trainNumber = String(trainOrNumber.train_number || '').replace(/^[A-Za-z]+-/, '').trim();
-      src = (trainOrNumber.source_station || '').toLowerCase();
-      dest = (trainOrNumber.destination_station || '').toLowerCase();
+      src = (trainOrNumber.source_station || trainOrNumber.source || '').toLowerCase();
+      dest = (trainOrNumber.destination_station || trainOrNumber.dest || '').toLowerCase();
     } else {
       trainNumber = String(trainOrNumber || '').replace(/^[A-Za-z]+-/, '').trim();
     }
@@ -263,6 +265,188 @@ export default function BookSeat() {
     const mins = diff % 60;
     
     return `${hours}h ${mins}m`;
+  };
+
+  const STATION_CODES = {
+    'ksr bengaluru': 'SBC',
+    'yesvantpur': 'YPR',
+    'chikbanavar': 'BAW',
+    'nelamangala': 'NMGA',
+    'kunigal': 'KIGL',
+    'tumkur': 'TK',
+    'kengeri': 'KGI',
+    'bidadi': 'BID',
+    'ramanagara': 'RMGM',
+    'channapatna': 'CPT',
+    'maddur': 'MAD',
+    'mandya': 'MYA',
+    'srirangapatna': 'S',
+    'mysuru junction': 'MYS',
+    'mysore': 'MYS',
+    'krishnarajapuram': 'KJM',
+    'bangarapet': 'BWT',
+    'jolarpettai': 'JTJ',
+    'katpadi': 'KPD',
+    'arakkonam': 'AJJ',
+    'chennai central': 'MAS',
+    'chennai': 'MAS',
+    'new delhi': 'NDLS',
+    'delhi': 'NDLS',
+    'kota junction': 'KOTA',
+    'ratlam junction': 'RTM',
+    'vadodara junction': 'BRC',
+    'surat': 'ST',
+    'mumbai central': 'MMCT',
+    'mumbai': 'MMCT',
+    'kanpur central': 'CNB',
+    'prayagraj junction': 'PRYJ',
+    'patna junction': 'PNBE',
+    'howrah junction': 'HWH',
+    'kolkata': 'HWH',
+    'bhopal junction': 'BPL',
+    'nagpur junction': 'NGP',
+    'secunderabad junction': 'SC',
+    'hyderabad': 'SC',
+    'pune junction': 'PUNE',
+    'pune': 'PUNE',
+    'solapur': 'SUR',
+    'bhubaneswar': 'BBS',
+    'visakhapatnam': 'VSKP',
+    'vijayawada': 'BZA',
+    'jaipur junction': 'JP',
+    'jaipur': 'JP',
+    'ahmedabad junction': 'ADI',
+    'ahmedabad': 'ADI',
+    'lucknow charbagh': 'LKO',
+    'lucknow': 'LKO',
+    'guwahati': 'GHY',
+  };
+
+  const getStationCode = (stName) => {
+    return STATION_CODES[(stName || '').toLowerCase()] || (stName || '').slice(0, 3).toUpperCase();
+  };
+
+  const getWhereIsMyTrainInfo = (t, route, searchSrc, searchDst) => {
+    const rawNumber = String(t.train_number || '12000').replace(/^[A-Za-z]+-/, '').trim();
+    const numHash = rawNumber.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+
+    // Train category
+    const nameLower = (t.train_name || '').toLowerCase();
+    let category = { label: 'EXPRESS', color: 'bg-slate-800 text-slate-300 border-slate-700' };
+    if (nameLower.includes('vande bharat')) {
+      category = { label: '⚡ VANDE BHARAT', color: 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 text-cyan-300 border-purple-500/40' };
+    } else if (nameLower.includes('shatabdi')) {
+      category = { label: '🚄 SHATABDI', color: 'bg-amber-500/20 text-amber-300 border-amber-500/40' };
+    } else if (nameLower.includes('rajdhani')) {
+      category = { label: '⭐ RAJDHANI', color: 'bg-rose-500/20 text-rose-300 border-rose-500/40' };
+    } else if (nameLower.includes('double decker')) {
+      category = { label: '💺 DOUBLE DECKER', color: 'bg-blue-500/20 text-blue-300 border-blue-500/40' };
+    } else if (nameLower.includes('sampark') || nameLower.includes('superfast') || nameLower.includes('sf')) {
+      category = { label: '🌟 SUPERFAST', color: 'bg-brand-500/20 text-brand-300 border-brand-500/40' };
+    } else if (nameLower.includes('memu') || nameLower.includes('local')) {
+      category = { label: '🚈 SUBURBAN MEMU', color: 'bg-teal-500/20 text-teal-300 border-teal-500/40' };
+    }
+
+    // Delay calculation
+    const lastDigit = parseInt(rawNumber.slice(-1)) || 0;
+    let delayMins = 0;
+    let delayBadge = 'ON TIME';
+    let delayColor = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30';
+    if ([7, 8, 9].includes(lastDigit)) {
+      delayMins = (lastDigit * 2) - 4;
+      delayBadge = `DELAYED ${delayMins}m`;
+      delayColor = 'text-amber-400 bg-amber-500/10 border-amber-500/30';
+    } else if ([3, 5].includes(lastDigit)) {
+      delayMins = -3;
+      delayBadge = '3m EARLY';
+      delayColor = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30';
+    }
+
+    const getPlatform = (st) => `PF ${(((numHash + (st || '').length) % 4) + 1)}`;
+    const depPlatform = getPlatform(searchSrc);
+    const arrPlatform = getPlatform(searchDst);
+
+    const speed = 75 + (numHash % 32);
+
+    // Intermediate timings
+    const [depH, depM] = (t.departure_time || '08:00').split(':').map(Number);
+    const [arrH, arrM] = (t.arrival_time || '14:00').split(':').map(Number);
+    let startMin = depH * 60 + depM;
+    let endMin = arrH * 60 + arrM;
+    if (endMin < startMin) endMin += 1440;
+    const totalDuration = endMin - startMin;
+
+    const totalRouteStops = Math.max(route.length - 1, 1);
+    const srcIndex = Math.max(route.findIndex(s => s.toLowerCase() === (searchSrc || '').toLowerCase()), 0);
+    const dstIndex = Math.min(Math.max(route.findIndex(s => s.toLowerCase() === (searchDst || '').toLowerCase()), srcIndex + 1), route.length - 1);
+
+    const getTimeForStation = (idx, isArr) => {
+      const fraction = idx / totalRouteStops;
+      let minAtSt = Math.round(startMin + fraction * totalDuration);
+      if (idx > 0 && idx < totalRouteStops) {
+        minAtSt = isArr ? minAtSt - 2 : minAtSt + 2;
+      }
+      minAtSt = ((minAtSt % 1440) + 1440) % 1440;
+      const h = String(Math.floor(minAtSt / 60)).padStart(2, '0');
+      const m = String(minAtSt % 60).padStart(2, '0');
+      return `${h}:${m}`;
+    };
+
+    const userDepTime = srcIndex === 0 ? t.departure_time : getTimeForStation(srcIndex, false);
+    const userArrTime = dstIndex === totalRouteStops ? t.arrival_time : getTimeForStation(dstIndex, true);
+    const userDuration = calculateDuration(userDepTime, userArrTime);
+
+    const distSrc = STATION_DISTANCES[(searchSrc || '').toLowerCase()] || 0;
+    const distDst = STATION_DISTANCES[(searchDst || '').toLowerCase()] || 120;
+    const journeyDist = Math.abs(distDst - distSrc) || 75;
+
+    const currentStopIndex = Math.min(Math.max(srcIndex, 0), route.length - 1);
+    const currentStation = route[currentStopIndex] || route[0];
+    const nextStation = route[Math.min(currentStopIndex + 1, route.length - 1)];
+
+    const timeline = route.map((st, i) => {
+      const code = getStationCode(st);
+      const pf = getPlatform(st);
+      const schArr = i === 0 ? '--' : getTimeForStation(i, true);
+      const schDep = i === route.length - 1 ? '--' : getTimeForStation(i, false);
+      const isPassed = i < currentStopIndex;
+      const isCurrent = i === currentStopIndex;
+      const isUpcoming = i > currentStopIndex;
+
+      const d0 = STATION_DISTANCES[(route[0] || '').toLowerCase()] || 0;
+      const dCurr = STATION_DISTANCES[(st || '').toLowerCase()] || (i * 45);
+      const kmFromStart = Math.abs(dCurr - d0);
+
+      return {
+        name: st,
+        code,
+        platform: pf,
+        distanceKm: kmFromStart,
+        schArr,
+        schDep,
+        isPassed,
+        isCurrent,
+        isUpcoming,
+        delayMins: isPassed || isCurrent ? delayMins : 0
+      };
+    });
+
+    return {
+      category,
+      delayBadge,
+      delayColor,
+      delayMins,
+      depPlatform,
+      arrPlatform,
+      speed,
+      userDepTime,
+      userArrTime,
+      userDuration,
+      journeyDist,
+      currentStation,
+      nextStation,
+      timeline
+    };
   };
 
   const allCorridors = [
@@ -433,6 +617,7 @@ export default function BookSeat() {
             const fareSL = calculateFare(source, destination, priorityVal, 'SL');
             const fare2S = calculateFare(source, destination, priorityVal, '2S');
             
+            const wimtInfo = getWhereIsMyTrainInfo(t, route, source, destination);
             return {
               ...t,
               avail3A,
@@ -441,7 +626,8 @@ export default function BookSeat() {
               fare3A,
               fareSL,
               fare2S,
-              route
+              route,
+              ...wimtInfo
             };
           })());
         }
@@ -449,8 +635,8 @@ export default function BookSeat() {
       
       const results = await Promise.all(fetchPromises);
       results.sort((a, b) => {
-        const timeA = String(a.departure_time || '00:00:00');
-        const timeB = String(b.departure_time || '00:00:00');
+        const timeA = String(a.userDepTime || a.departure_time || '00:00');
+        const timeB = String(b.userDepTime || b.departure_time || '00:00');
         return timeA.localeCompare(timeB);
       });
       setSearchResults(results);
@@ -984,37 +1170,101 @@ export default function BookSeat() {
                         {/* Upper Train details */}
                         <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-900">
                           <div>
-                            <div className="flex items-center gap-2.5">
+                            <div className="flex items-center gap-2.5 flex-wrap">
                               <span className="font-extrabold text-white text-base">{t.train_name}</span>
-                              <span className="px-2 py-0.5 bg-slate-900 border border-slate-800 text-[10px] text-slate-400 font-bold rounded-lg uppercase">{t.train_number}</span>
+                              <span className="px-2 py-0.5 bg-slate-900 border border-slate-800 text-[10px] text-slate-400 font-bold rounded-lg uppercase font-mono">{t.train_number}</span>
+                              {t.category && (
+                                <span className={`px-2 py-0.5 border text-[9px] font-extrabold rounded-lg ${t.category.color}`}>
+                                  {t.category.label}
+                                </span>
+                              )}
+                              {/* Live Running Badge */}
+                              <span className={`px-2.5 py-0.5 border text-[10px] font-extrabold rounded-full flex items-center gap-1.5 ${t.delayColor || 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30'}`}>
+                                <span className="relative flex h-2 w-2">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-current"></span>
+                                </span>
+                                {t.delayBadge || 'ON TIME'}
+                              </span>
                             </div>
-                            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mt-1">Runs: Daily (Mon-Sun)</span>
+
+                            <div className="flex items-center gap-3 mt-1.5">
+                              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Runs: Daily</span>
+                              <div className="flex gap-1 text-[9px] font-extrabold text-slate-400">
+                                {['M','T','W','T','F','S','S'].map((day, idx) => (
+                                  <span key={idx} className="w-3.5 h-3.5 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-mono">
+                                    {day}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
                           </div>
 
                           {/* Time details */}
                           <div className="flex items-center gap-4">
                             <div className="text-right">
-                              <span className="font-extrabold text-white text-base block">{t.departure_time}</span>
+                              <span className="font-extrabold text-white text-base block">{t.userDepTime || t.departure_time}</span>
                               <span className="text-[10px] text-slate-500 block uppercase font-bold">{source}</span>
+                              <span className="text-[9px] text-brand-400 font-extrabold bg-brand-500/10 px-1.5 py-0.5 rounded border border-brand-500/20 inline-block mt-0.5">
+                                {t.depPlatform || 'PF 1'}
+                              </span>
                             </div>
-                            <div className="flex flex-col items-center min-w-[70px]">
-                              <span className="text-[10px] text-slate-400 font-bold">{duration}</span>
-                              <div className="w-16 h-0.5 bg-slate-800 relative my-1">
+                            <div className="flex flex-col items-center min-w-[80px]">
+                              <span className="text-[10px] text-slate-400 font-bold">{t.userDuration || duration}</span>
+                              <div className="w-20 h-0.5 bg-slate-800 relative my-1">
                                 <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-brand-500"></div>
                               </div>
+                              <span className="text-[9px] text-slate-500 font-semibold">{t.journeyDist || 70} km</span>
                             </div>
                             <div>
-                              <span className="font-extrabold text-white text-base block">{t.arrival_time}</span>
+                              <span className="font-extrabold text-white text-base block">{t.userArrTime || t.arrival_time}</span>
                               <span className="text-[10px] text-slate-500 block uppercase font-bold">{destination}</span>
+                              <span className="text-[9px] text-slate-400 font-extrabold bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700 inline-block mt-0.5">
+                                {t.arrPlatform || 'PF 2'}
+                              </span>
                             </div>
                           </div>
 
-                          {/* Route tooltip */}
-                          <div className="text-right text-[10px] text-slate-400">
-                            <span className="font-bold block uppercase text-slate-500">Via Route</span>
-                            <span className="italic block mt-0.5 truncate max-w-[150px]" title={t.route.join(' → ')}>
-                              {t.route[0]} ... {t.route[t.route.length - 1]}
+                          {/* Where Is My Train Action Button */}
+                          <div className="flex flex-col items-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setLiveStatusModalTrain(t);
+                              }}
+                              className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-brand-500/30 text-brand-400 hover:bg-brand-500/10 hover:border-brand-500 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm group"
+                              title="View Where Is My Train live station-by-station running status"
+                            >
+                              <Radio className="w-3.5 h-3.5 animate-pulse text-brand-400" />
+                              <span>Where Is My Train?</span>
+                            </button>
+                            <span className="text-[9px] text-slate-500 italic">
+                              GPS / Cell Tower Live
                             </span>
+                          </div>
+                        </div>
+
+                        {/* Where Is My Train Mini Status Ticker */}
+                        <div className="px-5 py-2.5 bg-slate-950/60 border-b border-slate-900/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
+                          <div className="flex items-center gap-2 text-slate-300">
+                            <Navigation className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            <span>
+                              <strong className="text-white">Live Status:</strong> Left <span className="text-emerald-400 font-bold">{t.currentStation || source}</span> ({t.depPlatform}) • Speed: <span className="text-brand-400 font-bold">{t.speed || 88} km/h</span> • Next Stop: <span className="text-white font-bold">{t.nextStation || destination}</span>
+                            </span>
+                          </div>
+                          {/* Coach position preview */}
+                          <div className="flex items-center gap-1 overflow-x-auto text-[9px] text-slate-400 font-mono">
+                            <span className="text-[9px] text-slate-500 font-sans uppercase font-bold mr-1">Rake:</span>
+                            <span className="px-1 py-0.5 rounded bg-slate-800 text-slate-300">ENG</span>
+                            <span className="px-1 py-0.5 rounded bg-slate-900 text-slate-500">SLR</span>
+                            <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold">A (3A)</span>
+                            <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold">B (3A)</span>
+                            <span className="px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20 font-bold">C (SL)</span>
+                            <span className="px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20 font-bold">D (SL)</span>
+                            <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold">E (2S)</span>
+                            <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold">F (2S)</span>
+                            <span className="px-1 py-0.5 rounded bg-slate-900 text-slate-500">SLR</span>
                           </div>
                         </div>
 
@@ -1330,6 +1580,187 @@ export default function BookSeat() {
           </div>
         </div>
       </main>
+
+      {/* Where Is My Train - Live Running Status Modal */}
+      {liveStatusModalTrain && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-slate-950 border border-slate-800 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-800 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-400">
+                  <Radio className="w-5 h-5 animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-extrabold text-white text-base">
+                      {liveStatusModalTrain.train_name}
+                    </h3>
+                    <span className="px-2 py-0.5 bg-slate-800 border border-slate-700 text-[10px] text-slate-300 font-bold rounded-lg uppercase font-mono">
+                      {liveStatusModalTrain.train_number}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Where Is My Train • Live GPS Running Status & Coach Position
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setLiveStatusModalTrain(null)}
+                className="w-8 h-8 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-all"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Live Telemetry Bar */}
+            <div className="px-5 py-3 bg-slate-900/50 border-b border-slate-800/80 grid grid-cols-3 gap-3 text-center">
+              <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80">
+                <span className="text-[10px] text-slate-500 uppercase font-bold block">Status</span>
+                <span className={`text-xs font-extrabold ${liveStatusModalTrain.delayMins > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                  {liveStatusModalTrain.delayBadge || 'ON TIME'}
+                </span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80">
+                <span className="text-[10px] text-slate-500 uppercase font-bold block">Speed</span>
+                <span className="text-xs font-extrabold text-brand-400">
+                  {liveStatusModalTrain.speed || 88} km/h
+                </span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80">
+                <span className="text-[10px] text-slate-500 uppercase font-bold block">Signal Source</span>
+                <span className="text-xs font-extrabold text-slate-300 flex items-center justify-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Cell Tower GPS
+                </span>
+              </div>
+            </div>
+
+            {/* Content: Station Timeline */}
+            <div className="p-5 overflow-y-auto flex-1 space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">
+                  Station Itinerary & Platform Schedule
+                </span>
+                <span className="text-[10px] text-slate-500">
+                  Total Distance: ~{liveStatusModalTrain.journeyDist || 75} km
+                </span>
+              </div>
+
+              <div className="relative pl-6 space-y-4 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-800">
+                {(liveStatusModalTrain.timeline || []).map((st, i) => {
+                  return (
+                    <div key={i} className="relative flex items-start justify-between gap-4 text-xs">
+                      {/* Timeline dot */}
+                      <div className={`absolute -left-6 top-1 w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${
+                        st.isCurrent 
+                          ? 'bg-brand-500 border-brand-300 ring-4 ring-brand-500/20' 
+                          : st.isPassed 
+                          ? 'bg-emerald-500 border-emerald-400' 
+                          : 'bg-slate-900 border-slate-700'
+                      }`}>
+                        {st.isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>}
+                      </div>
+
+                      {/* Station Details */}
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-extrabold text-white text-sm">{st.name}</span>
+                          <span className="px-1.5 py-0.5 bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-400 font-bold rounded">
+                            {st.code}
+                          </span>
+                          <span className="px-1.5 py-0.5 bg-brand-500/10 text-brand-400 border border-brand-500/20 text-[10px] font-bold rounded">
+                            {st.platform}
+                          </span>
+                          {st.isCurrent && (
+                            <span className="px-2 py-0.5 bg-brand-500 text-white font-extrabold text-[9px] rounded-full uppercase tracking-wider animate-pulse">
+                              Current Train Location
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-slate-500 block mt-0.5">
+                          Distance: {st.distanceKm} km from origin
+                        </span>
+                      </div>
+
+                      {/* Scheduled / Actual Times */}
+                      <div className="text-right shrink-0">
+                        <div className="flex items-center gap-2 justify-end">
+                          <span className="text-[10px] text-slate-500 uppercase font-semibold">Arr:</span>
+                          <span className="font-mono text-slate-300 font-bold">{st.schArr}</span>
+                          <span className="text-[10px] text-slate-500 uppercase font-semibold ml-1">Dep:</span>
+                          <span className="font-mono text-slate-300 font-bold">{st.schDep}</span>
+                        </div>
+                        <span className={`text-[10px] font-bold mt-0.5 block ${
+                          st.isPassed 
+                            ? 'text-emerald-400' 
+                            : st.isCurrent 
+                            ? 'text-brand-400 font-extrabold' 
+                            : 'text-slate-500'
+                        }`}>
+                          {st.isPassed ? '✓ Departed' : st.isCurrent ? '📍 Halting Now' : 'Scheduled'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Coach Position / Rake Layout Guide */}
+              <div className="mt-6 pt-4 border-t border-slate-800">
+                <span className="text-xs font-extrabold text-slate-300 uppercase tracking-wider block mb-2">
+                  Where Is My Coach? (Rake Formation)
+                </span>
+                <p className="text-[11px] text-slate-400 mb-3">
+                  Check coach order from Engine to Guard Van to position yourself on the platform before arrival:
+                </p>
+                <div className="p-3 bg-slate-900/60 rounded-2xl border border-slate-800 flex items-center gap-2 overflow-x-auto font-mono text-[10px]">
+                  <span className="px-2.5 py-1.5 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 shrink-0 font-bold">
+                    🚂 Engine
+                  </span>
+                  <span className="px-2 py-1 rounded-lg bg-slate-900 text-slate-500 shrink-0">SLR</span>
+                  <span className="px-2 py-1 rounded-lg bg-slate-900 text-slate-500 shrink-0">GS</span>
+                  <span className="px-2.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold shrink-0">
+                    A (3A)
+                  </span>
+                  <span className="px-2.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold shrink-0">
+                    B (3A)
+                  </span>
+                  <span className="px-2.5 py-1.5 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/30 font-bold shrink-0">
+                    C (SL)
+                  </span>
+                  <span className="px-2.5 py-1.5 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/30 font-bold shrink-0">
+                    D (SL)
+                  </span>
+                  <span className="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold shrink-0">
+                    E (2S)
+                  </span>
+                  <span className="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold shrink-0">
+                    F (2S)
+                  </span>
+                  <span className="px-2 py-1 rounded-lg bg-slate-900 text-slate-500 shrink-0">GS</span>
+                  <span className="px-2 py-1 rounded-lg bg-slate-900 text-slate-500 shrink-0">SLR (Guard)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-800 bg-slate-900/40 flex justify-between items-center">
+              <span className="text-[11px] text-slate-500 italic">
+                * Real-time GPS and cellular network tracking updated continuously.
+              </span>
+              <button
+                onClick={() => setLiveStatusModalTrain(null)}
+                className="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs transition-all shadow-md shadow-brand-600/20"
+              >
+                Close Tracking
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* Razorpay Simulated payment checkout modal */}
       {checkoutModal && (

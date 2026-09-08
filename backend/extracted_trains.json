@@ -1,0 +1,850 @@
+[
+  {
+    "number": "12079",
+    "name": "KSR Bengaluru - SSS Hubballi Jan Shatabdi Express",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "06:00",
+    "arr_time": "07:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "17326",
+    "name": "Vishwa Manava Express",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "08:45",
+    "arr_time": "10:03",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "16579",
+    "name": "Yesvantpur - Shivamogga Town InterCity Express",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "09:15",
+    "arr_time": "10:14",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "06571",
+    "name": "KSR Bengaluru - Tumakuru MEMU Special",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "09:20",
+    "arr_time": "10:55",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "17316",
+    "name": "Velankanni - Vasco Da Gama Weekly Express",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "11:35",
+    "arr_time": "12:40",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12725",
+    "name": "Siddhaganga InterCity SF Express",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "12:45",
+    "arr_time": "13:48",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "06575",
+    "name": "KSR Bengaluru - Tumakuru MEMU Special",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "13:50",
+    "arr_time": "15:20",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12629",
+    "name": "Karnataka Sampark Kranti Express",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "14:30",
+    "arr_time": "15:24",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "17309",
+    "name": "Yesvantpur - Vasco Da Gama Express",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "15:00",
+    "arr_time": "15:58",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "16535",
+    "name": "Gol Gumbaz Express",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "18:30",
+    "arr_time": "19:40",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "16589",
+    "name": "Rani Chennamma Express",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "23:00",
+    "arr_time": "23:59",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "16227",
+    "name": "Bengaluru - Talguppa Express",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "23:15",
+    "arr_time": "00:30",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "16021",
+    "name": "Kaveri Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "03:50",
+    "arr_time": "06:40",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "16231",
+    "name": "Mayiladuturai - Mysuru Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "05:45",
+    "arr_time": "08:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "16591",
+    "name": "Hampi Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "06:10",
+    "arr_time": "08:50",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "16235",
+    "name": "Tuticorin - Mysuru Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "07:15",
+    "arr_time": "10:10",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "20607",
+    "name": "MGR Chennai - Mysuru Vande Bharat Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "10:20",
+    "arr_time": "12:20",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12007",
+    "name": "MGR Chennai - Mysuru Shatabdi Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "10:45",
+    "arr_time": "13:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "16558",
+    "name": "Rajya Rani Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "11:30",
+    "arr_time": "14:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12976",
+    "name": "Jaipur - Mysuru Superfast Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "13:00",
+    "arr_time": "15:30",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12614",
+    "name": "Wodeyar SF Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "15:15",
+    "arr_time": "17:45",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "16216",
+    "name": "Chamundi Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "18:15",
+    "arr_time": "21:05",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12609",
+    "name": "MGR Chennai Central - Mysuru SF Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "19:50",
+    "arr_time": "22:50",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12608",
+    "name": "Lalbagh SF Express",
+    "source": "KSR Bengaluru",
+    "dest": "Chennai Central",
+    "dep_time": "06:20",
+    "arr_time": "12:15",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12610",
+    "name": "KSR Bengaluru - MGR Chennai Central SF Express",
+    "source": "KSR Bengaluru",
+    "dest": "Chennai Central",
+    "dep_time": "08:00",
+    "arr_time": "14:25",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12578",
+    "name": "Bagmati SF Express",
+    "source": "KSR Bengaluru",
+    "dest": "Chennai Central",
+    "dep_time": "13:50",
+    "arr_time": "19:45",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "22626",
+    "name": "KSR Bengaluru - MGR Chennai Central Double Decker Express",
+    "source": "KSR Bengaluru",
+    "dest": "Chennai Central",
+    "dep_time": "14:30",
+    "arr_time": "20:35",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "20608",
+    "name": "Mysuru - MGR Chennai Central Vande Bharat Express",
+    "source": "KSR Bengaluru",
+    "dest": "Chennai Central",
+    "dep_time": "14:50",
+    "arr_time": "19:20",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12640",
+    "name": "Brindavan Express",
+    "source": "KSR Bengaluru",
+    "dest": "Chennai Central",
+    "dep_time": "15:10",
+    "arr_time": "21:10",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12008",
+    "name": "Mysuru - MGR Chennai Central Shatabdi Express",
+    "source": "KSR Bengaluru",
+    "dest": "Chennai Central",
+    "dep_time": "16:15",
+    "arr_time": "21:30",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12658",
+    "name": "KSR Bengaluru - MGR Chennai Central Mail",
+    "source": "KSR Bengaluru",
+    "dest": "Chennai Central",
+    "dep_time": "22:40",
+    "arr_time": "04:20",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12692",
+    "name": "SSPN - MGR Chennai Central Superfast Express",
+    "source": "KSR Bengaluru",
+    "dest": "Chennai Central",
+    "dep_time": "23:25",
+    "arr_time": "05:15",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12628",
+    "name": "Karnataka Express",
+    "source": "New Delhi",
+    "dest": "KSR Bengaluru",
+    "dep_time": "20:15",
+    "arr_time": "12:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "22691",
+    "name": "Bengaluru Rajdhani Express",
+    "source": "KSR Bengaluru",
+    "dest": "New Delhi",
+    "dep_time": "20:00",
+    "arr_time": "05:55",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12952",
+    "name": "Mumbai Rajdhani Express",
+    "source": "New Delhi",
+    "dest": "Mumbai Central",
+    "dep_time": "16:55",
+    "arr_time": "08:35",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12302",
+    "name": "Howrah Rajdhani Express",
+    "source": "New Delhi",
+    "dest": "Howrah Junction",
+    "dep_time": "16:50",
+    "arr_time": "09:55",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12163",
+    "name": "Mumbai Chennai Express",
+    "source": "Mumbai Central",
+    "dest": "Chennai Central",
+    "dep_time": "18:45",
+    "arr_time": "16:30",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "12842",
+    "name": "Coromandel Express",
+    "source": "Howrah Junction",
+    "dest": "Chennai Central",
+    "dep_time": "13:50",
+    "arr_time": "17:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "SHT-12008",
+    "name": "Mysuru Shatabdi Express",
+    "source": "KSR Bengaluru",
+    "dest": "Mysuru Junction",
+    "dep_time": "11:00",
+    "arr_time": "13:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "MYS-12007",
+    "name": "Chennai Mysuru Shatabdi",
+    "source": "Chennai Central",
+    "dest": "Mysuru Junction",
+    "dep_time": "06:00",
+    "arr_time": "13:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "SBC-12629",
+    "name": "Karnataka Sampark Kranti",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "13:50",
+    "arr_time": "14:55",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "KSR-101",
+    "name": "Bengaluru City Local",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "07:30",
+    "arr_time": "09:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "LTT-12163",
+    "name": "Mumbai Chennai Express",
+    "source": "Mumbai Central",
+    "dest": "Chennai Central",
+    "dep_time": "18:45",
+    "arr_time": "16:30",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "MAS-12842",
+    "name": "Coromandel Express",
+    "source": "Howrah Junction",
+    "dest": "Chennai Central",
+    "dep_time": "13:50",
+    "arr_time": "17:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "NDLS-12952",
+    "name": "Mumbai Rajdhani Express",
+    "source": "New Delhi",
+    "dest": "Mumbai Central",
+    "dep_time": "16:55",
+    "arr_time": "08:35",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "HWH-12302",
+    "name": "Howrah Rajdhani Express",
+    "source": "New Delhi",
+    "dest": "Howrah Junction",
+    "dep_time": "16:50",
+    "arr_time": "09:55",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "SBC-12628",
+    "name": "Karnataka Express",
+    "source": "New Delhi",
+    "dest": "KSR Bengaluru",
+    "dep_time": "20:15",
+    "arr_time": "12:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "MYS-16231",
+    "name": "Mayiladuturai Express",
+    "source": "Mysuru Junction",
+    "dest": "KSR Bengaluru",
+    "dep_time": "05:45",
+    "arr_time": "08:00",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "SBC-12657",
+    "name": "Chennai Mail",
+    "source": "KSR Bengaluru",
+    "dest": "Chennai Central",
+    "dep_time": "22:40",
+    "arr_time": "04:45",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "KPG-22691",
+    "name": "Rajdhani Express",
+    "source": "KSR Bengaluru",
+    "dest": "Tumkur",
+    "dep_time": "20:00",
+    "arr_time": "21:10",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "MAS-12608",
+    "name": "Lalbagh Express",
+    "source": "Chennai Central",
+    "dest": "KSR Bengaluru",
+    "dep_time": "15:30",
+    "arr_time": "21:15",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "MAS-12639",
+    "name": "Brindavan Express",
+    "source": "Chennai Central",
+    "dest": "KSR Bengaluru",
+    "dep_time": "07:40",
+    "arr_time": "13:45",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  },
+  {
+    "number": "MAS-20607",
+    "name": "Mysuru Vande Bharat Express",
+    "source": "Chennai Central",
+    "dest": "Mysuru Junction",
+    "dep_time": "05:50",
+    "arr_time": "12:20",
+    "coaches": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  }
+]
