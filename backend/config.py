@@ -1,8 +1,8 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    # Database
-    DATABASE_URL: str = "postgresql://postgres:password@localhost:5432/train_seat_db"
+    # Database (defaults to embedded SQLite for zero-config cloud deployment)
+    DATABASE_URL: str = "sqlite:///./train_allocation.db"
 
     # JWT
     SECRET_KEY: str = "your-secret-key-change-this-in-production"

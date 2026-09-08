@@ -38,15 +38,15 @@ app.include_router(chatbot_router)
 @app.on_event("startup")
 def create_tables():
     Base.metadata.create_all(bind=engine)
-    print("✅ All tables created successfully")
+    print("[+] All database tables verified successfully")
     
-    # Auto-seed database if empty (ensures zero-config cloud deployment on Hugging Face)
+    # Auto-seed database if empty (ensures zero-config cloud deployment on Render and Hugging Face)
     try:
         from models.train import Train
         db = SessionLocal()
         train_count = db.query(Train).count()
         if train_count == 0:
-            print("🚀 Empty database detected on startup. Seeding official train routes and coach layouts...")
+            print("[+] Fresh database detected on startup. Seeding official train routes and coach layouts...")
             try:
                 from seed import seed
                 seed(db)
@@ -57,7 +57,7 @@ def create_tables():
                 seed_all_india_trains(db)
             except Exception as e:
                 print(f"All-India trains seed warning: {e}")
-            print("✅ Auto-seeding complete!")
+            print("[+] Auto-seeding complete!")
         db.close()
     except Exception as e:
         print(f"Startup check warning: {e}")
