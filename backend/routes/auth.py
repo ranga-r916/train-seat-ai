@@ -320,7 +320,8 @@ from fastapi import Header
 @router.post("/verify-aadhaar", response_model=UserResponse)
 def verify_aadhaar(
     file: UploadFile = File(...),
-    x_demo_type: str = Header(None),
+    x_demo_type: Optional[str] = Header(None),
+    scenario: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -328,7 +329,7 @@ def verify_aadhaar(
     Endpoint for passengers to upload their Aadhaar card.
     The AI Agent parses the text, performs cross-checks, and assigns the priority level.
     """
-    # Validate that it is actually an Aadhaar document by checking filename keywords in mock mode
+    selected_demo = x_demo_type or scenario
     filename_lower = file.filename.lower()
     is_mock_mode = (not settings.GEMINI_API_KEY or 
                     "your-gemini-api-key" in settings.GEMINI_API_KEY or 
@@ -345,7 +346,7 @@ def verify_aadhaar(
             fallback_age=current_user.verified_age,
             fallback_gender=current_user.verified_gender,
             fallback_disabled=current_user.is_disabled,
-            demo_type=x_demo_type
+            demo_type=selected_demo
         )
     except ValueError as e:
         raise HTTPException(
@@ -386,7 +387,7 @@ def verify_aadhaar(
         aadhaar_age = current_user.verified_age or 28
 
     # 2. IDENTITY VERIFICATION: Ensure the uploaded Aadhaar belongs to the logged-in user
-    if x_demo_type in ("mismatch_name", "mismatch_gender", "mismatch_age"):
+    if selected_demo in ("mismatch_name", "mismatch_gender", "mismatch_age"):
         current_user.is_flagged_for_review = True
         current_user.aadhaar_verified = False
         db.commit()
@@ -503,6 +504,15 @@ def verify_aadhaar_scan(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Identity Mismatch Error: Scanned Aadhaar barcode belongs to '{aadhaar_name}', which does NOT match your registered account name ('{current_user.name}'). You cannot scan another person's Aadhaar card."
         )
+
+    # Prevent duplicate account collision lockouts across demo sessions
+    existing_user = db.query(User).filter(
+        User.aadhaar_number_hash == aadhaar_hash,
+        User.email != current_user.email
+    ).first()
+    if existing_user:
+        existing_user.aadhaar_number_hash = None
+        db.commit()
 
     # Fill user details directly from the official scan!
     current_user.aadhaar_verified = True
