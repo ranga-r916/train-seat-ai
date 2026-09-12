@@ -7,6 +7,7 @@ from typing import Optional
 import hashlib
 import re
 import uuid
+import asyncio
 from datetime import datetime, date
 
 from database import get_db
@@ -125,14 +126,16 @@ async def parse_aadhaar(
     mime_type = file.content_type or "image/jpeg"
     
     try:
-        aadhaar_data = extract_aadhaar_details(
+        aadhaar_data = await asyncio.to_thread(
+            extract_aadhaar_details,
             contents,
             mime_type,
             fallback_user_name="Passenger",
             fallback_age=25,
             fallback_gender="Male",
             fallback_disabled=False,
-            demo_type=x_demo_type
+            demo_type=x_demo_type,
+            filename=file.filename or ""
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -339,14 +342,16 @@ def verify_aadhaar(
     
     # Run the AI OCR & Barcode Agent with strict validation
     try:
-        aadhaar_data = extract_aadhaar_details(
+        aadhaar_data = await asyncio.to_thread(
+            extract_aadhaar_details,
             contents, 
             mime_type, 
             fallback_user_name=current_user.name,
             fallback_age=current_user.verified_age,
             fallback_gender=current_user.verified_gender,
             fallback_disabled=current_user.is_disabled,
-            demo_type=selected_demo
+            demo_type=selected_demo,
+            filename=file.filename or ""
         )
     except ValueError as e:
         raise HTTPException(
