@@ -321,7 +321,7 @@ def get_me(current_user: User = Depends(get_current_user)):
 from fastapi import Header
 
 @router.post("/verify-aadhaar", response_model=UserResponse)
-def verify_aadhaar(
+async def verify_aadhaar(
     file: UploadFile = File(...),
     x_demo_type: Optional[str] = Header(None),
     scenario: Optional[str] = Form(None),
@@ -337,7 +337,7 @@ def verify_aadhaar(
     is_mock_mode = (not settings.GEMINI_API_KEY or 
                     "your-gemini-api-key" in settings.GEMINI_API_KEY or 
                     settings.GEMINI_API_KEY == "")
-    contents = file.file.read()
+    contents = await file.read()
     mime_type = file.content_type or "image/jpeg"
     
     # Run the AI OCR & Barcode Agent with strict validation
