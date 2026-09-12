@@ -437,25 +437,6 @@ export default function PassengerDashboard() {
                 </div>
               )}
 
-              {/* Demo Simulator Mode */}
-              <div className="p-4 bg-slate-900/40 rounded-2xl border border-slate-800/80 space-y-3">
-                <label className="block text-slate-300 text-xs font-bold uppercase tracking-wider">
-                  🧪 Sandbox Demo Simulation Mode
-                </label>
-                <p className="text-[11px] text-slate-400 leading-normal font-sans">
-                  Choose Real AI Scan for automatic OCR extraction from genuine Aadhaar card, or select a sandbox simulation test:
-                </p>
-                <select
-                  value={demoType}
-                  onChange={(e) => setDemoType(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 text-xs focus:outline-none focus:border-brand-500"
-                >
-                  <option value="real">🔍 Real AI Aadhaar OCR & Barcode Scan (Strict Validation)</option>
-                  <option value="valid_senior">🧪 Sandbox Simulation: Senior Citizen (Age 68 - Priority Tier 1)</option>
-                  <option value="valid_disabled">🧪 Sandbox Simulation: Disability Concession (Tier 2)</option>
-                  <option value="mismatch_name">🧪 Sandbox Simulation: Force Name Mismatch</option>
-                </select>
-              </div>
 
               <form onSubmit={handleAadhaarUpload} className="space-y-6">
                 <div className="border border-dashed border-slate-800 rounded-2xl p-8 flex flex-col items-center justify-center hover:border-brand-500/50 transition-all cursor-pointer bg-slate-900/10">
@@ -1221,21 +1202,6 @@ export default function PassengerDashboard() {
                   </label>
                 </div>
 
-                <div className="p-3 bg-slate-900/50 rounded-xl border border-slate-800 space-y-1.5">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                    🧪 Verification Type Simulation:
-                  </span>
-                  <select
-                    value={demoType}
-                    onChange={(e) => setDemoType(e.target.value)}
-                    className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-brand-500"
-                  >
-                    <option value="real">🔍 Real AI Aadhaar OCR & Barcode Scan (Strict Validation)</option>
-                    <option value="valid_senior">🧪 Sandbox Simulation: Senior Citizen (Age 68 - Priority Tier 1)</option>
-                    <option value="valid_disabled">🧪 Sandbox Simulation: Disability Concession (Tier 2)</option>
-                    <option value="mismatch_name">🧪 Sandbox Simulation: Force Name Mismatch</option>
-                  </select>
-                </div>
 
                 <button
                   type="submit"

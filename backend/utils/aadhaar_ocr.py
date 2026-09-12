@@ -102,8 +102,8 @@ def extract_aadhaar_details(
                         if pt_clean and len(pt_clean) > 1 and pt_clean not in lines:
                             lines.append(pt_clean)
                 else:
-                    # Scanned PDF without text layer: render at moderate scale for OCR
-                    pil_img = page.render(scale=1.0).to_pil()
+                    # Scanned PDF without text layer: render at moderate scale for fast OCR
+                    pil_img = page.render(scale=0.5).to_pil()
         except Exception as e:
             print(f"pypdfium2 rendering error: {e}")
 
@@ -118,7 +118,7 @@ def extract_aadhaar_details(
                 import pypdfium2 as pdfium
                 pdf_doc = pdfium.PdfDocument(image_bytes)
                 if len(pdf_doc) > 0:
-                    pil_img = pdf_doc[0].render(scale=1.0).to_pil()
+                    pil_img = pdf_doc[0].render(scale=0.5).to_pil()
             except Exception:
                 pass
 
@@ -127,20 +127,14 @@ def extract_aadhaar_details(
     fallback_aadhaar_number = f"5996-{card_hash[0:4].upper()}-{card_hash[4:8].upper()}"
 
     if not lines and pil_img is None:
-        # If document cannot be parsed into text or image, provide smooth fallback
-        birth_year = current_year - fb_age
-        return {
-            "aadhaar_number": fallback_aadhaar_number,
-            "name": fb_name,
-            "dob": f"15/06/{birth_year}",
-            "gender": fb_gender,
-            "is_disabled": fallback_disabled,
-            "is_valid_aadhaar": True
-        }
+        raise ValueError(
+            "Invalid Document: The uploaded file could not be read as an image or PDF. "
+            "Please upload a clear JPEG, PNG, or PDF file of your Aadhaar card."
+        )
 
-    # High-Speed Optimization: Downscale image to 800px max for ultra-fast (sub-second) OCR
-    if pil_img and (pil_img.width > 800 or pil_img.height > 800):
-        pil_img.thumbnail((800, 800), Image.Resampling.BILINEAR)
+    # High-Speed Optimization: Downscale image to 650px max for ultra-fast (sub-second) OCR
+    if pil_img and (pil_img.width > 650 or pil_img.height > 650):
+        pil_img.thumbnail((650, 650), Image.Resampling.BILINEAR)
 
     # Step A: Check for QR / Barcode with pyzbar only if text is not already found
     if not lines and pyzbar is not None and pil_img is not None:
@@ -180,10 +174,97 @@ def extract_aadhaar_details(
         except Exception as e:
             print(f"Failed to process image OCR: {e}")
 
-    full_text = " ".join(lines).lower()
-    print(f"DEBUG: Detected {len(lines)} lines: {lines}")
+    raw_text_combined = " ".join(lines)
+    full_text = raw_text_combined.lower()
+    compressed_text = re.sub(r'[\s\-_.:/\\,()|]', '', full_text)
 
-    # Step C: Extract Fields from Real Aadhaar OCR
+    try:
+        safe_preview = [l.encode('ascii', errors='replace').decode() for l in lines[:10]]
+        print(f"DEBUG: Detected {len(lines)} lines: {safe_preview}")
+    except Exception:
+        pass
+
+    # Step C: Negative Document Classification (Strictly reject other government IDs)
+    if re.search(r'\b(income\s*tax|permanent\s*account\s*number|incometaxdepartment)\b', full_text, re.IGNORECASE) and not re.search(r'\b(aadha?a?r|uidai)\b', full_text, re.IGNORECASE):
+        raise ValueError("Invalid Document: The uploaded file is a PAN Card, not an Aadhaar Card. Please upload your official Government of India Aadhaar card.")
+
+    if re.search(r'\b(driving\s*licen[sc]e|motor\s*vehicles?\s*dept)\b', full_text, re.IGNORECASE) and not re.search(r'\b(aadha?a?r|uidai)\b', full_text, re.IGNORECASE):
+        raise ValueError("Invalid Document: The uploaded file is a Driving Licence, not an Aadhaar Card. Please upload your official Government of India Aadhaar card.")
+
+    if re.search(r'\b(election\s*commission|voter\s*id|elector.*photo)\b', full_text, re.IGNORECASE) and not re.search(r'\b(aadha?a?r|uidai)\b', full_text, re.IGNORECASE):
+        raise ValueError("Invalid Document: The uploaded file is a Voter ID Card, not an Aadhaar Card. Please upload your official Government of India Aadhaar card.")
+
+    if re.search(r'\b(marks\s*card|secondary\s*school|sslc|cbse|board\s*of\s*examination)\b', full_text, re.IGNORECASE) and not re.search(r'\b(aadha?a?r|uidai)\b', full_text, re.IGNORECASE):
+        raise ValueError("Invalid Document: The uploaded file is an Academic Certificate / Marks Card, not an Aadhaar Card. Please upload your official Government of India Aadhaar card.")
+
+    if re.search(r'\b(passbook|bank\s*of|state\s*bank|canara\s*bank|hdfc|icici|account\s*statement)\b', full_text, re.IGNORECASE) and not re.search(r'\b(aadha?a?r|uidai)\b', full_text, re.IGNORECASE):
+        raise ValueError("Invalid Document: The uploaded file is a Bank Passbook, not an Aadhaar Card. Please upload your official Government of India Aadhaar card.")
+
+    # Step D: Positive Aadhaar Document Verification
+    is_genuine_aadhaar = False
+
+    # Check 1: Explicit 12-digit UID pattern, masked pattern, VID, or Enrolment No in lines
+    for line in lines:
+        if re.search(r'\b\d{4}\s\d{4}\s\d{4}\b', line):
+            is_genuine_aadhaar = True
+            break
+        if re.search(r'\b\d{12}\b', line):
+            is_genuine_aadhaar = True
+            break
+        if re.search(r'[xX*•]{4}\s?[xX*•]{4}\s?\d{4}', line):
+            is_genuine_aadhaar = True
+            break
+        if re.search(r'vid\s*[:]?\s*(\d{4}\s?\d{4}\s?\d{4}\s?\d{4}|\d{16})', line, re.IGNORECASE):
+            is_genuine_aadhaar = True
+            break
+        if re.search(r'(?:enrolment|enrollment)\s*(?:no\.?|number)?\s*[:]?\s*\d{4}/\d{5}/\d{5}', line, re.IGNORECASE):
+            is_genuine_aadhaar = True
+            break
+
+    # Check 2: Official Aadhaar authority keywords in extracted text
+    if not is_genuine_aadhaar:
+        authority_keywords = [
+            "aadhaar", "aadhar", "mera aadhaar", "meri pehchan", "mera aadhar",
+            "unique identification", "uidai", "myaadhaar", "help@uidai",
+            "government of india", "govt of india", "govt. of india", "bharat sarkar",
+            "enrolment no", "enrollment no", "your ao", "vid :"
+        ]
+        compressed_keywords = [
+            "aadhaar", "aadhar", "uidai", "uniqueidentification",
+            "governmentofindia", "govtofindia", "bharatsarkar",
+            "meriaadhaar", "meripehchan", "enrolmentno", "enrollmentno"
+        ]
+        regional_keywords = [
+            "ಆಧಾರ್", "ವಿಶಿಷ್ಟ ಗುರುತಿನ ಪ್ರಾಧಿಕಾರ", "ವಿಶಿಷ್ಟ ಗುರುತಿನ", "ಪ್ರಾಧಿಕಾರ", "ಭಾರತ ಸರ್ಕಾರ",
+            "आधार", "भारतीय विशिष्ट पहचान प्राधिकरण", "भारत सरकार", "प्राधिकरण",
+            "ஆதார்", "இந்திய அரசு",
+            "ఆధార్", "భారత ప్రభుత్వం",
+            "ആധാർ", "ഭാരത സർക്കാർ",
+            "আধার", "ভারত সরকার"
+        ]
+
+        if any(kw in full_text for kw in authority_keywords):
+            is_genuine_aadhaar = True
+        elif any(ckw in compressed_text for ckw in compressed_keywords):
+            is_genuine_aadhaar = True
+        elif any(rkw in raw_text_combined for rkw in regional_keywords):
+            is_genuine_aadhaar = True
+        elif re.search(r'\b(aadha?a?r|aadhar)\b', full_text, re.IGNORECASE):
+            is_genuine_aadhaar = True
+        elif re.search(r'unique\s+ident', full_text, re.IGNORECASE):
+            is_genuine_aadhaar = True
+        elif re.search(r'uidai', full_text, re.IGNORECASE):
+            is_genuine_aadhaar = True
+
+    # REJECTION GUARD: If no Aadhaar credentials detected, reject immediately!
+    if not is_genuine_aadhaar:
+        raise ValueError(
+            "Invalid Document: The uploaded file is NOT a recognized Government of India Aadhaar card. "
+            "No Government of India header, 12-digit Aadhaar number, or UIDAI barcode was detected. "
+            "Please upload a clear photo or PDF of your genuine Aadhaar card."
+        )
+
+    # Step E: Extract Fields from Verified Genuine Aadhaar Document
     # 1. Aadhaar Number (searches full 12 digits, masked format, or VID)
     aadhaar_number = None
     for line in lines:
@@ -280,14 +361,17 @@ def extract_aadhaar_details(
             continue
         if len(cleaned) < 3:
             continue
+        words = cleaned.split()
+        # Disqualify single short abbreviations (e.g. 'AVT', 'VTC', 'PO', 'SKX', 'PMS')
+        if len(words) == 1 and len(cleaned) <= 3:
+            continue
         if not re.match(r'^[A-Za-z\s.]+$', cleaned):
             continue
         # Disqualify single lowercase gibberish words (like 'draba')
-        if cleaned.islower() and len(cleaned.split()) == 1:
+        if cleaned.islower() and len(words) == 1:
             continue
 
         score = 0
-        words = cleaned.split()
         
         # 2+ words (typical Indian name: first + last name or initials)
         if len(words) >= 2:
@@ -320,7 +404,7 @@ def extract_aadhaar_details(
     if candidates:
         candidates.sort(key=lambda x: x[0], reverse=True)
         best_score, best_name = candidates[0]
-        if best_score > 0:
+        if best_score >= 60:
             extracted_name = best_name
 
     if not extracted_name:
