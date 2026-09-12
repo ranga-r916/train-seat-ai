@@ -4,8 +4,9 @@
 FROM node:20-slim AS frontend-builder
 WORKDIR /frontend
 
+ENV NODE_ENV=development
 COPY frontend/package*.json ./
-RUN npm install
+RUN npm install --include=dev
 
 COPY frontend/ ./
 RUN npm run build
