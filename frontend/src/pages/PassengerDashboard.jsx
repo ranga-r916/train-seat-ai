@@ -198,7 +198,6 @@ export default function PassengerDashboard() {
 
       const response = await api.post('/auth/verify-aadhaar', formData, {
         headers: { 
-          'Content-Type': 'multipart/form-data',
           'X-Demo-Type': demoType
         }
       });
@@ -210,8 +209,9 @@ export default function PassengerDashboard() {
       setAadhaarFile(null);
       fetchUserData();
     } catch (err) {
-      console.error(err);
-      setOcrError(err.response?.data?.detail || 'Aadhaar OCR processing failed.');
+      console.error('Aadhaar verification error:', err);
+      const detailMsg = err.response?.data?.detail || err.message || 'Aadhaar verification failed. Please try again with a clear photo or PDF.';
+      setOcrError(detailMsg);
     } finally {
       setUploading(false);
     }
